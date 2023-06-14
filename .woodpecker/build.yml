@@ -1,0 +1,23 @@
+when: 
+  event: 
+    exclude: deployment
+
+steps:
+  build:
+    image: alpine:3.18
+    commands:
+      - echo "Hello World" > ${CI_COMMIT_SHA}.txt
+  
+  upload:
+    image: plugins/s3-sync:1.3.0
+    settings:
+
+      source: ${CI_COMMIT_SHA}.txt
+      target: ${CI_REPO}/${CI_COMMIT_SHA}.txt
+
+      path_style: true # required for minio
+
+      bucket: { from_secret: minio_bucket }
+      access_key: { from_secret: minio_access_key }
+      secret_key: { from_secret: minio_secret_key }
+      endpoint: { from_secret: minio_endpoint }

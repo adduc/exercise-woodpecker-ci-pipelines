@@ -1,0 +1,17 @@
+when:
+  event: deployment
+
+steps:
+  deploy:
+    # image with minio client (mcli)
+    image: ockawin/v1-app-minio:3.17-amd64
+    commands:
+      - mcli alias set minio $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
+      - mcli cp minio/$MINIO_BUCKET/$CI_REPO/$CI_COMMIT_SHA.txt $CI_COMMIT_SHA.txt
+      - cat $CI_COMMIT_SHA.txt
+
+    secrets:
+      - minio_endpoint
+      - minio_access_key
+      - minio_secret_key
+      - minio_bucket
